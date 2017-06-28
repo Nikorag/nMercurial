@@ -1,6 +1,6 @@
 div.diffTable
     div(ng-repeat="chunk in fileChanges.chunks track by $index")
-        table
+        table.z-depth-2
             thead
                 tr
                     th(colspan="2")
@@ -9,4 +9,4 @@ div.diffTable
                 tr(ng-repeat="chg in chunk.changes")
                     td.lineNo {{chg.ln}} {{chg.ln1}}
                     td.lineNo {{chg.ln2}}
-                    td(ng-class="(chg.del ? 'deleteRow' : '')+(chg.add ? 'addRow' : '')") {{chg.content}}
+                    td(ng-class="(chg.del ? 'deleteRow' : '')+(chg.add ? 'addRow' : '')") {{sanitizeDiffContent(chg)}}

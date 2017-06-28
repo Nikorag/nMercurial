@@ -1,3 +1,13 @@
+@grey: #bdbdbd;
+@light-grey: rgba(0, 0, 0, 0.12);
+@light-green: #b2ff59;
+@light-red: #ef9a9a;
+@light-blue: #4fc3f7;
+@indigo: rgb(40,53,147);
+
+.z-depth-2 {
+  box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.3);
+}
 .repoCard {
   md-card-title-text {
     margin-right: 1em;
@@ -158,7 +168,7 @@
     font-weight: bold;
   }
   .selected {
-    background-color: rgb(40,53,147);
+    background-color: @indigo;
     color: white;
   }
   .additions {
@@ -173,10 +183,12 @@
       width: 100%;
       border-collapse:collapse;
       margin-top: 15px;
+      border: 1px solid @light-grey;
     }
     thead {
-      background-color: lightgrey;
+      background-color: @grey;
       tr {
+        border-bottom: 1px solid @light-grey;
         th {
           text-align: right;
           font-weight: normal;
@@ -187,17 +199,19 @@
     tbody {
       tr {
         td {
+          font-family: monospace;
           &.lineNo {
-            background-color: lightgrey;
+            background-color: @grey;
+            border-right: 1px solid @light-grey;
           }
           &:nth-child(3){
             padding-left: 5px;
           }
           &.deleteRow {
-            background-color: pink;
+            background-color: @light-red;
           }
           &.addRow {
-            background-color: lightgreen;
+            background-color: @light-green;
           }
         }
       }
@@ -246,6 +260,8 @@
 .fileList {
   i {
     margin-right: 5px;
+    top: -8px;
+    position: relative;
   }
   .fileItem-A i{
     color: green;

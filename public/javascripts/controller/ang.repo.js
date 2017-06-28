@@ -6,6 +6,7 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
     $scope.selectedChangeset = {}; //Selected change set
     $scope.changedFiles = {}; //Files changed in selected change set
     $scope.fileChanges = {}; //Changes to selected file
+    $scope.totalHistory = 0;
     $scope.gridOptions = {
         sort: {
             predicate: 'date',
@@ -14,6 +15,7 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
         data: [],
         getData : function(params, callback){
             hg.getHistory(params, $scope.repoName).then(function(result){
+                $scope.totalHistory = result.count;
                 callback(result.data, result.count);
             });
         }
@@ -72,6 +74,14 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
 
     $scope.goHome = function(){
         window.location.href="/";
+    }
+
+    $scope.sanitizeDiffContent = function(change){
+        if (change.del || change.add){
+            return change.content.substr(1);
+        } else {
+            return change.content;
+        }
     }
 
     //Render the initial page

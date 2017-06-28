@@ -1,6 +1,6 @@
 div(layout-gt-sm='row', layout-sm='column', layout-align='center')
     div(flex-gt-sm='25', flex-sm='100', layout='row', layout-align='start center')
-        span {{filtered.length}} items total
+        span {{totalHistory}} items total
     div(flex-gt-sm='75', flex-xs='100')
         div(layout-xs='column', layout='row', layout-align-xs='end end', layout-align='end center')
             grid-pagination.pagination.mdl-shadow--2dp(max-size='5', boundary-links='true', ng-if='paginationOptions.totalItems  > paginationOptions.itemsPerPage', total-items='paginationOptions.totalItems', ng-model='paginationOptions.currentPage', ng-change='reloadGrid()', items-per-page='paginationOptions.itemsPerPage')

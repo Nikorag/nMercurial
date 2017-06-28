@@ -62,12 +62,12 @@ html(lang='en')
                             md-list.fileList(flex="")
                                 md-subheader.md-sticky Files
                                 span(ng-repeat="file in changedFiles")
-                                    md-list-item.md-2-line(ng-click="getFileChanges(file.filename)", ng-class="'fileItem-'+file.mod")
+                                    md-list-item.md-1-line(ng-click="getFileChanges(file.filename)", ng-class="'fileItem-'+file.mod")
                                         i.fa.fa-plus(ng-if="file.mod == 'A'")
                                         i.fa.fa-pencil(ng-if="file.mod == 'M'")
                                         i.fa.fa-ban(ng-if="file.mod == 'R'")
                                         .md-list-item-text(layout="column")
-                                            h3
+                                            p
                                                 span {{file.filename}}
                         div(flex="60", layout="column")
                             include fragments/diff.jade
