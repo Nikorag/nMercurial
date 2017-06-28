@@ -1,0 +1,25 @@
+.addRepoPopup
+    md-toolbar.md-hue-2
+        .md-toolbar-tools
+            md-button.md-icon-button(aria-label='Settings', ng-disabled='true')
+                md-icon(md-svg-icon='images/logo.svg')
+            h2(flex='', md-truncate='') #{title}
+            md-button.md-icon-button(aria-label='Favorite')
+                md-icon(md-svg-icon='img/icons/favorite.svg', style='color: greenyellow;')
+            md-button.md-icon-button(aria-label='More')
+                md-icon(md-svg-icon='img/icons/more_vert.svg')
+    md-content
+        div(layout="column", layout-padding="")
+            div.checkPathRow(layout="row")
+                md-input-container(flex="95")
+                    label Path
+                    input(ng-model='repo.path')
+                i(id="validRepo", flex="5", class="fa {{validClass()}}")
+            md-input-container
+                label Name
+                input(ng-model='repo.name')
+            md-input-container
+                label URL
+                input(ng-model='repo.url', disabled="")
+            span(flex="")
+            md-button.md-raised.md-primary(ng-disabled="valid == false", ng-click="addRepo(repo)") Add Repo

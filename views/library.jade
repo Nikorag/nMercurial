@@ -1,0 +1,32 @@
+html(lang='en')
+    head
+        include fragments/head.jade
+    body(ng-app='BlankApp', ng-cloak='')
+        div(ng-controller="libraryCtrl")
+            include fragments/toolbar.jade
+            md-content
+                div(flex="", layout="row", layout-padding="")
+                    h3(ng-if="repos.length == 0") No Repos Imported Yet
+                    md-card.repoCard(ng-repeat="repo in repos", flex="33")
+                        md-card-title
+                            md-card-title-text(flex="60")
+                                span.md-headline {{repo.name}}
+                                span.md-subhead {{repo.path}}
+                                span.md-subhead {{repo.url}}
+                            md-card-title-media(flex="40", layout-align="end center")
+                                .md-media-lg.card-media
+                                    img.md-avatar(ng-src="images/greyLogo.svg")
+                        md-card-actions(layout="row", layout-align="end center")
+                            md-button
+                                i.fa.fa-pencil
+                                | Edit
+                            md-button(ng-click="removeRepo($index, $event)")
+                                i.fa.fa-ban
+                                | remove
+                            md-button(ng-click="openRepo(repo.name)")
+                                i.fa.fa-external-link
+                                | Open
+                md-button.md-raised.md-primary(ng-click="showAddRepo($event)") Add Repo
+
+
+        include fragments/includes.jade

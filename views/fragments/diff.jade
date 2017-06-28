@@ -1,0 +1,12 @@
+div.diffTable
+    div(ng-repeat="chunk in fileChanges.chunks track by $index")
+        table
+            thead
+                tr
+                    th(colspan="2")
+                    th Chunk {{$index+1}} Lines {{chunk.newStart}}-{{chunk.newStart+chunk.newLines}}
+            tbody
+                tr(ng-repeat="chg in chunk.changes")
+                    td.lineNo {{chg.ln}} {{chg.ln1}}
+                    td.lineNo {{chg.ln2}}
+                    td(ng-class="(chg.del ? 'deleteRow' : '')+(chg.add ? 'addRow' : '')") {{chg.content}}
