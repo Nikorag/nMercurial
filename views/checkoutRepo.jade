@@ -1,0 +1,26 @@
+.repoPopup
+    md-toolbar.md-hue-2
+        .md-toolbar-tools
+            md-button.md-icon-button(aria-label='Settings', ng-disabled='true')
+                md-icon(md-svg-icon='images/logo.svg')
+            h2(flex='', md-truncate='') #{title}
+    md-content
+        div(layout="column", layout-padding="")
+            md-input-container
+                label URL
+                input(ng-model='repo.url')
+            md-input-container
+                label Local Path
+                input(ng-model='repo.path')
+            md-input-container
+                label Repo Name
+                input(ng-model='repo.name')
+            span(flex="")
+            div(layout="row")
+                md-input-container(flex="50")
+                    label Username
+                    input(ng-model='repo.username')
+                md-input-container(flex="50")
+                    label Password
+                    input(ng-model='repo.password', type="password")
+            md-button.md-raised.md-primary(ng-click="clone(repo)") Clone Repo

@@ -59,4 +59,16 @@ angular.module('BlankApp').service('hg', function($http, $q){
         });
         return deferred.promise;
     }
+
+    this.cloneRepo = function(repo){
+        var deferred = $q.defer();
+        $http({
+            method : "POST",
+            url: "/cloneRepo",
+            data: repo
+        }).then(function(response){
+           deferred.resolve();
+        });
+        return deferred.promise;
+    }
 });

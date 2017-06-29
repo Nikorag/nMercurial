@@ -2,22 +2,24 @@ var hg = require("hg");
 var storageService = require("./storageService");
 var fs = require('fs');
 var parse = require('parse-diff');
+var path = require("path");
 
 HGRepo = hg.HGRepo;
 
 module.exports = {
-    getStatus : getStatus,
-    getRepoPath : getRepoPath,
-    getRepos : getRepos,
-    getRepo : getRepo,
-    saveRepo : saveRepo,
-    removeRepo : removeRepo,
-    getBranches : getBranches,
-    getHistory : getHistory,
-    changeBranch : changeBranch,
-    getCurrentRevision : getCurrentRevision,
-    getChanges : getChanges,
-    getModifiedFiles : getModifiedFiles
+    getStatus : getStatus, //Get current file status
+    getRepoPath : getRepoPath, //Get URL from repo
+    getRepos : getRepos, //Get saved Repos
+    getRepo : getRepo, //Get saved Repo by name
+    saveRepo : saveRepo, //Save a repo
+    removeRepo : removeRepo, //Remove a repo
+    getBranches : getBranches, //Get branches of a repo
+    getHistory : getHistory, //Get history of a repo
+    changeBranch : changeBranch, //Change branch on a repo
+    getCurrentRevision : getCurrentRevision, //Get repo's current revision
+    getChanges : getChanges, //Get changes in a file and revision
+    getModifiedFiles : getModifiedFiles, //Get modified files in a revision
+    clone : clone
 }
 
 function getStatus(callback){
@@ -51,7 +53,7 @@ function getStatus(callback){
     });
 }
 
-function getRepoPath(path, promise){
+function getRepoPath(path){
     return new Promise(function(resolve, reject){
         //Check if the directory exists
         if (fs.existsSync(path)) {
@@ -219,5 +221,21 @@ function getChanges(repo, revision, filename, promise){
             var files = parse(diff);
             promise(files);
         }
+    });
+}
+
+function clone(url, dest, username, password){
+    return new Promise(function(resolve, reject){
+        var destPath = path.resolve(dest);
+        var urlMatch = /^(https?\:\/\/)(.*)/g;
+        var match = urlMatch.exec(url);
+        var fullUrl = `${match[1]}${username}:${password}@${match[2]}`;
+        new HGRepo().runCommand("clone", [fullUrl, destPath], function(err, output){
+            if (err){
+                reject(err);
+                throw err;
+            }
+            resolve(destPath);
+        });
     });
 }

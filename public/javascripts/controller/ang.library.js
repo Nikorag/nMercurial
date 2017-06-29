@@ -22,7 +22,24 @@ angular.module('BlankApp').controller("libraryCtrl", function($scope, $mdDialog,
         }, function () {
             $scope.status = 'You cancelled the dialog.';
         });
-    }
+    };
+
+    $scope.showCheckoutRepo = function(ev) {
+        $mdDialog.show({
+            controller: "checkoutRepoDialogCtrl",
+            templateUrl: 'checkoutRepoPopup',
+            parent: angular.element(document.body),
+            targetEvent: ev,
+            clickOutsideToClose: true,
+            fullscreen: $scope.customFullscreen // Only for -xs, -sm breakpoints.
+        })
+            .then(function (repo) {
+                //Display the repo
+                $scope.repos.push(repo);
+            }, function () {
+                $scope.status = 'You cancelled the dialog.';
+            });
+    };
 
     $scope.removeRepo = function(index, ev) {
         var confirm = $mdDialog.confirm()
@@ -79,6 +96,13 @@ angular.module('BlankApp').controller("addRepoDialogCtrl", function($scope, $htt
     //Save the repo
     $scope.addRepo = function(repo){
         libraryService.addRepo(repo).then(function(result){
+            $mdDialog.hide(repo);
+        });
+    }
+})
+angular.module('BlankApp').controller("checkoutRepoDialogCtrl", function($scope, $http, $mdDialog, hg, libraryService){
+    $scope.clone = function(repo){
+        hg.cloneRepo(repo).then(function(){
             $mdDialog.hide(repo);
         });
     }

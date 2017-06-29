@@ -48,7 +48,7 @@ function removeRepo(repoName){
 function validateNewRepo(newRepo, repos){
     for (var i in repos){
         var repo = repos[i];
-        if (repo.url == newRepo.url || repo.path == newRepo.path || repo.name == newRepo.name){
+        if (repo.path == newRepo.path || repo.name == newRepo.name){
             return false;
         }
     }

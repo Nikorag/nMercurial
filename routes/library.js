@@ -19,6 +19,14 @@ router.get('/addRepoPopup', function(req, res, next){
     res.render('addRepo', model);
 });
 
+/* Render the checkoutRepo */
+router.get('/checkoutRepoPopup', function(req, res, next){
+    var model = {
+        title: "Checkout Repo",
+    }
+    res.render('checkoutRepo', model);
+});
+
 /* get the repo library */
 router.get("/repoLibrary", function(req, res, next){
     res.setHeader('Content-Type', 'application/json');
@@ -47,4 +55,25 @@ router.get("/removeRepo", function(req, res, next){
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify(hgService.removeRepo(repoName)));
 });
+
+router.post("/cloneRepo", function(req, res, next){
+    var url = req.body.url;
+    var path = req.body.path;
+    var username = req.body.username;
+    var password = req.body.password;
+    var name = req.body.name;
+    hgService.clone(url, path, username, password).then(function(result){
+        var repo = {
+            "name" : name,
+            "path": path,
+            "url": url
+        }
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(hgService.saveRepo(repo)));
+    }, function(){
+        res.setHeader('Content-Type', 'application/json');
+        res.send(false);
+    });
+});
+
 module.exports = router;
