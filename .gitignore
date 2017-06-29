@@ -109,3 +109,6 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# style.css cos it's in style.less
+public/stylesheets/style.css
