@@ -74,6 +74,8 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
                     return branch.name == branchName;
                 })[0].active = true;
                 $scope.updateCurrentRevision(function(){});
+                $rootScope.reloadDataGrid();
+                $scope.clearSelection();
             });
         }, function() {
             //TODO didn't confirm
@@ -140,6 +142,12 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
 
     $scope.refreshRepo = function(){
         $rootScope.reloadDataGrid();
+    }
+
+    $scope.clearSelection = function(){
+        $scope.selectedChangeset = {};
+        $scope.changedFiles = {};
+        $scope.fileChanges = {};
     }
 
     //Render the initial page
