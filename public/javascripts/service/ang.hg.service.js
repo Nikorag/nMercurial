@@ -94,4 +94,20 @@ angular.module('BlankApp').service('hg', function($http, $q){
         });
         return deferred.promise;
     }
+
+    this.commit = function(repoName, filenames, commitMsg){
+        var deferred = $q.defer();
+        $http({
+            method : "POST",
+            url : "/repo/commit",
+            data: {
+                "repoName" : repoName,
+                "filenames" : filenames,
+                "commitMsg" : commitMsg
+            }
+        }).then(function(response){
+            deferred.resolve();
+        })
+        return deferred.promise;
+    }
 });

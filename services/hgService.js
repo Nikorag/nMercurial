@@ -22,7 +22,8 @@ module.exports = {
     getModifiedFiles : getModifiedFiles, //Get modified files in a revision
     clone : clone, //Clone a repo
     getTags : getTags, //Get a list of tags for a repo
-    fullPatch : fullPatch //patch file for unversioned files
+    fullPatch : fullPatch, //patch file for unversioned files
+    commit : commit //Commit
 }
 
 function getStatus(repo, callback){
@@ -268,4 +269,37 @@ function fullPatch(repo, filename, promise){
     patchService.createPatch(filePath, function(result){
         promise(result);
     });
+}
+
+function commit(repo, filenames, commitMsg, promise){
+    //Check for unversioned files
+    var repo = new HGRepo(repo.path);
+    var filesToAdd = [];
+    var filesToRemove = [];
+    repo.runCommand("status", filenames, function(err, output){
+        for (var i in output){
+            var next = parseInt(i)+1;
+            if (output[i].body == '? '){
+                filesToAdd.push(output[next].body.trim());
+            } else if (output[i].body == "! "){
+                filesToRemove.push(output[next].body.trim());
+            }
+        }
+        repo.runCommand("add", filesToAdd, function(err, output){
+            repo.runCommand("remove", filesToRemove, function(err, output){
+                var commitOpts = {
+                    "-m": commitMsg
+                };
+                repo.commit(filenames, commitOpts, function(err, output){
+                    if (err){
+                        console.log(err);
+                        throw err;
+                    }
+                    promise();
+                });
+            });
+
+        });
+    });
+
 }

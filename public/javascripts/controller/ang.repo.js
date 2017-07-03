@@ -1,22 +1,27 @@
-angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDialog, hg){
+angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDialog, hg, $rootScope, $location){
 
     $scope.repoName = $('.repoName').attr("data-repoName"); //Current reponame, rendered on the page by the route
     $scope.branches = []; //List of branches
     $scope.tags = []; //List of tags
-    $scope.currentRevision = ""; //Current revision hash
+    $scope.currentRevision = "nothing"; //Current revision hash
     $scope.selectedChangeset = {}; //Selected change set
     $scope.changedFiles = {}; //Files changed in selected change set
     $scope.fileChanges = {}; //Changes to selected file
     $scope.totalHistory = 0;
+    $scope.gridActions = {};
     $scope.gridOptions = {
         sort: {
             predicate: 'date',
             direction: 'asc'
         },
         data: [],
-        getData : function(params, callback){
+        getData : getData
+    };
+
+    function getData(params, callback){
+        $scope.updateCurrentRevision(function(){
             hg.getHistory(params, $scope.repoName).then(function(result){
-                if ($scope.currentRevision == ""){
+                if ($scope.currentRevision == "" && getSearchParamsFromString(params).page == '1'){
                     $scope.totalHistory = parseInt(result.count)+1;
                     var uncommitedChanges = {
                         changeset : "",
@@ -32,17 +37,19 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
                     callback(result.data, result.count);
                 }
             });
-        }
-    };
+        });
+    }
 
-    $scope.updateCurrentRevision = function(){
+    $scope.updateCurrentRevision = function(promise){
         hg.getStatus($scope.repoName).then(function(status){
            if (status.length == 0){
                hg.getCurrentRevision($scope.repoName).then(function(result){
                    $scope.currentRevision = result;
+                   promise();
                });
            } else {
                $scope.currentRevision = "";
+               promise()
            }
         });
     };
@@ -66,7 +73,7 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
                     console.log(branch.name);
                     return branch.name == branchName;
                 })[0].active = true;
-                $scope.updateCurrentRevision();
+                $scope.updateCurrentRevision(function(){});
             });
         }, function() {
             //TODO didn't confirm
@@ -104,6 +111,37 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
         }
     }
 
+    $scope.commit = function(commitMsg, ev){
+        if ($scope.getCheckedFiles().length > 0) {
+            var confirm = $mdDialog.confirm()
+                .title('Commit file(s)')
+                .textContent('Would you like to commit file(s)')
+                .targetEvent(ev)
+                .ok('commit')
+                .cancel('Cancel');
+
+            $mdDialog.show(confirm).then(function () {
+                hg.commit($scope.repoName, $scope.getCheckedFiles(), commitMsg).then(function(){
+                    window.location.reload();
+                });
+            }, function () {
+                //TODO reject deleting a repo
+            });
+        }
+    }
+
+    $scope.getCheckedFiles = function(){
+        var filenames = [];
+        $('.fileList md-checkbox.md-checked').each(function(){
+            filenames.push($(this).attr("data-filename"));
+        });
+        return filenames;
+    }
+
+    $scope.refreshRepo = function(){
+        $rootScope.reloadDataGrid();
+    }
+
     //Render the initial page
     hg.getBranches($scope.repoName).then(function(result){
         $scope.branches = result;
@@ -111,5 +149,14 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
     hg.getTags($scope.repoName).then(function(result){
        $scope.tags = result;
     });
-    $scope.updateCurrentRevision();
+
+    function getSearchParamsFromString(str){
+        var params = {};
+        var couples = str.substr(1).split('&');
+        for (var i in couples){
+            var couple = couples[i].split("=");
+            params[couple[0]] = couple[1];
+        }
+        return params;
+    }
 });

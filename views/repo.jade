@@ -29,6 +29,7 @@ html(lang='en')
                                         p {{tag.name}}
                         md-sidemenu-group
                             md-sidemenu-content(md-icon="archive", md-heading="shelves")
+                    md-button.md-raised.md-primary(ng-click="refreshRepo()") Refresh
             div#repoGrid(flex="", layout="column")
                 include fragments/toolbar
                 md-content(layout-padding="")
@@ -64,8 +65,9 @@ html(lang='en')
                         div.file-list(flex="40", layout="column")
                             md-list.fileList(flex="")
                                 md-subheader.md-sticky Files
-                                span(ng-repeat="file in changedFiles")
+                                span(ng-repeat="file in changedFiles track by $index")
                                     md-list-item.md-1-line(ng-click="getFileChanges(file)", ng-class="'fileItem-'+(file.mod != '?' ? file.mod : 'unknown')")
+                                        md-checkbox.md-primary(ng-if="selectedChangeset == ''", data-filename="{{file.filename}}")
                                         i.fa.fa-plus(ng-if="file.mod == 'A'")
                                         i.fa.fa-pencil(ng-if="file.mod == 'M'")
                                         i.fa.fa-ban(ng-if="file.mod == 'R'")
@@ -75,4 +77,11 @@ html(lang='en')
                                                 span {{file.filename}}
                         div(flex="60", layout="column")
                             include fragments/diff.jade
+                    div(layout="column", ng-if="selectedChangeset == ''")
+                        md-input-container.md-block
+                            label Commit Message
+                            textarea(rows="3", ng-model="commitMsg")
+                        div(layout="row")
+                            span(flex="")
+                            md-button.md-raised.md-primary(ng-click="commit(commitMsg, $event)", ng-disabled="getCheckedFiles().length == 0") Commit
         include fragments/includes.jade
