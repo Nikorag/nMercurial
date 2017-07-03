@@ -69,4 +69,12 @@ router.get('/repo/getModifiedFiles', function(req, res, next) {
     });
 });
 
+router.get('/repo/getTags', function(req, res, next){
+    var repo = hgService.getRepo(req.param("repoName"));
+    hgService.getTags(repo, function(response){
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(response));
+    });
+});
+
 module.exports = router;

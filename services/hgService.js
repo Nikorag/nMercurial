@@ -19,7 +19,8 @@ module.exports = {
     getCurrentRevision : getCurrentRevision, //Get repo's current revision
     getChanges : getChanges, //Get changes in a file and revision
     getModifiedFiles : getModifiedFiles, //Get modified files in a revision
-    clone : clone
+    clone : clone,
+    getTags : getTags
 }
 
 function getStatus(callback){
@@ -207,7 +208,6 @@ function getModifiedFiles(repo, revision, promise){
 
 function getChanges(repo, revision, filename, promise){
     var repo = new HGRepo(repo.path);
-    console.log("hg log -p -r "+revision+" "+filename);
     repo.runCommand("diff", ["-c", revision, filename], function(err, output) {
         if (err) {
             console.log("Jamie error");
@@ -238,4 +238,29 @@ function clone(url, dest, username, password){
             resolve(destPath);
         });
     });
+}
+
+function getTags(repo, promise){
+    var tags = [];
+    var repo = new HGRepo(repo.path);
+    repo.runCommand("tags", [], function(err, output){
+        if (err){
+            console.log(err);
+            throw err;
+        }
+        for (var i in output){
+            if (i % 2 == 0 && output[i].body && output[i].body.trim() != ''){
+                var next = parseInt(i)+1;
+                if (output[next].body.includes(":")) {
+                    var tag = {
+                        name: output[i].body.trim(),
+                        changeset: output[next].body.split(":")[0].trim(),
+                        revision: output[next].body.split(":")[1].trim()
+                    }
+                }
+                tags.push(tag);
+            }
+        }
+        promise(tags);
+    })
 }

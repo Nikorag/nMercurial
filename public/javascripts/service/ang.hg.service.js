@@ -8,6 +8,14 @@ angular.module('BlankApp').service('hg', function($http, $q){
         return deferred.promise;
     };
 
+    this.getTags = function(repoName){
+        var deferred = $q.defer();
+        $http.get("/repo/getTags?repoName="+repoName).then(function(result){
+            deferred.resolve(result.data);
+        });
+        return deferred.promise;
+    }
+
     this.getHistory = function(params, repoName){
         var deferred = $q.defer();
         $http.get("/repo/getHistory"+params+"&repoName="+repoName).then(function(result){

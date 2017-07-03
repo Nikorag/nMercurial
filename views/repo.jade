@@ -24,6 +24,9 @@ html(lang='en')
                                         p(ng-class="branch.active ? 'active-branch' : ''") {{branch.name}}
                         md-sidemenu-group
                             md-sidemenu-content(md-icon="tags", md-heading="tags")
+                                span(ng-repeat="tag in tags")
+                                    md-sidemenu-button(ng-click="null")
+                                        p {{tag.name}}
                         md-sidemenu-group
                             md-sidemenu-content(md-icon="archive", md-heading="shelves")
             div#repoGrid(flex="", layout="column")

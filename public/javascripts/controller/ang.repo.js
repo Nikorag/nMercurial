@@ -2,6 +2,7 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
 
     $scope.repoName = $('.repoName').attr("data-repoName"); //Current reponame, rendered on the page by the route
     $scope.branches = []; //List of branches
+    $scope.tags = []; //List of tags
     $scope.currentRevision = ""; //Current revision hash
     $scope.selectedChangeset = {}; //Selected change set
     $scope.changedFiles = {}; //Files changed in selected change set
@@ -87,6 +88,9 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
     //Render the initial page
     hg.getBranches($scope.repoName).then(function(result){
         $scope.branches = result;
+    });
+    hg.getTags($scope.repoName).then(function(result){
+       $scope.tags = result;
     });
     $scope.updateCurrentRevision();
 });
