@@ -3,6 +3,7 @@ var storageService = require("./storageService");
 var fs = require('fs');
 var parse = require('parse-diff');
 var path = require("path");
+var patchService = require("./patchService");
 
 HGRepo = hg.HGRepo;
 
@@ -19,21 +20,18 @@ module.exports = {
     getCurrentRevision : getCurrentRevision, //Get repo's current revision
     getChanges : getChanges, //Get changes in a file and revision
     getModifiedFiles : getModifiedFiles, //Get modified files in a revision
-    clone : clone,
-    getTags : getTags
+    clone : clone, //Clone a repo
+    getTags : getTags, //Get a list of tags for a repo
+    fullPatch : fullPatch //patch file for unversioned files
 }
 
-function getStatus(callback){
-
-    var repo = new HGRepo("/Users/jbartlett/projects/exertis/code");
-
+function getStatus(repo, callback){
+    var repo = new HGRepo(repo.path);
     var status = [];
-
     repo.status(function(err, output) {
         if (err) {
             throw err;
         }
-
         for (var i =0;i<output.length;i=i+2){
             if (output[i].channel="o" && output[i].length == 2) {
                 var fileStatus = {
@@ -49,7 +47,6 @@ function getStatus(callback){
                 status.push(fileStatus);
             }
         }
-
         callback(status);
     });
 }
@@ -219,6 +216,7 @@ function getChanges(repo, revision, filename, promise){
                 diff += output[i].body;
             }
             var files = parse(diff);
+            console.log(JSON.stringify(files));
             promise(files);
         }
     });
@@ -263,4 +261,11 @@ function getTags(repo, promise){
         }
         promise(tags);
     })
+}
+
+function fullPatch(repo, filename, promise){
+    var filePath = path.join(repo.path, filename);
+    patchService.createPatch(filePath, function(result){
+        promise(result);
+    });
 }

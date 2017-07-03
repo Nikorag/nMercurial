@@ -24,6 +24,14 @@ angular.module('BlankApp').service('hg', function($http, $q){
         return deferred.promise;
     };
 
+    this.getStatus = function(repoName){
+        var deferred = $q.defer();
+        $http.get("/repo/getStatus?repoName="+repoName).then(function(result){
+            deferred.resolve(result.data);
+        });
+        return deferred.promise;
+    }
+
     this.getCurrentRevision = function(repoName){
         var deferred = $q.defer();
         $http.get("/repo/getCurrentRevision?repoName="+repoName).then(function(result){
@@ -52,11 +60,18 @@ angular.module('BlankApp').service('hg', function($http, $q){
         return deferred.promise;
     }
 
-    this.getFileChanges = function(changeset, filename, repoName){
+    this.getFileChanges = function(changeset, file, repoName){
         var deferred = $q.defer();
-        $http.get("/repo/getChanges?repoName="+repoName+"&revision="+changeset+"&filename="+filename).then(function(result){
-            deferred.resolve(result.data[0]);
-        });
+        if (file.mod == '?'){
+            console.log(JSON.stringify(file));
+            $http.get("/repo/fullPatch?repoName=" + repoName + "&filename=" + file.filename).then(function (result) {
+                deferred.resolve(result.data[0]);
+            });
+        } else {
+            $http.get("/repo/getChanges?repoName=" + repoName + "&revision=" + changeset + "&filename=" + file.filename).then(function (result) {
+                deferred.resolve(result.data[0]);
+            });
+        }
         return deferred.promise;
     }
 

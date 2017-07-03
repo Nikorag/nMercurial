@@ -77,4 +77,21 @@ router.get('/repo/getTags', function(req, res, next){
     });
 });
 
+router.get('/repo/getStatus', function(req, res, next){
+    var repo = hgService.getRepo(req.param("repoName"));
+    hgService.getStatus(repo, function(response){
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(response));
+    });
+});
+
+router.get('/repo/fullPatch', function(req, res, next){
+    var repo = hgService.getRepo(req.param("repoName"));
+    var filename = req.param("filename");
+    hgService.fullPatch(repo, filename, function (response) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(response));
+    });
+});
+
 module.exports = router;

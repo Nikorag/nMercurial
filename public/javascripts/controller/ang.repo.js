@@ -16,15 +16,34 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
         data: [],
         getData : function(params, callback){
             hg.getHistory(params, $scope.repoName).then(function(result){
-                $scope.totalHistory = result.count;
-                callback(result.data, result.count);
+                if ($scope.currentRevision == ""){
+                    $scope.totalHistory = parseInt(result.count)+1;
+                    var uncommitedChanges = {
+                        changeset : "",
+                        revision : "",
+                        user : "",
+                        date : "",
+                        summary : "Uncommited Changes"
+                    }
+                    result.data.splice(0,0,uncommitedChanges);
+                    callback(result.data, $scope.totalHistory);
+                } else {
+                    $scope.totalHistory = result.count;
+                    callback(result.data, result.count);
+                }
             });
         }
     };
 
     $scope.updateCurrentRevision = function(){
-        hg.getCurrentRevision($scope.repoName).then(function(result){
-            $scope.currentRevision = result;
+        hg.getStatus($scope.repoName).then(function(status){
+           if (status.length == 0){
+               hg.getCurrentRevision($scope.repoName).then(function(result){
+                   $scope.currentRevision = result;
+               });
+           } else {
+               $scope.currentRevision = "";
+           }
         });
     };
 
@@ -63,8 +82,8 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
         });
     }
 
-    $scope.getFileChanges = function(filename){
-        hg.getFileChanges($scope.selectedChangeset, filename, $scope.repoName).then(function(result){
+    $scope.getFileChanges = function(file){
+        hg.getFileChanges($scope.selectedChangeset, file, $scope.repoName).then(function (result) {
             $scope.fileChanges = result;
         });
     };
