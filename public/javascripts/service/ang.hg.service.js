@@ -19,6 +19,7 @@ angular.module('BlankApp').service('hg', function($http, $q, $mdDialog){
     this.getHistory = function(params, repoName){
         var deferred = $q.defer();
         $http.get("/repo/getHistory"+params+"&repoName="+repoName).then(function(result){
+            console.log(JSON.stringify(result.data));
             deferred.resolve(result.data);
         });
         return deferred.promise;

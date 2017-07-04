@@ -31,6 +31,9 @@ module.exports = {
     push : push
 }
 
+var logTemplate = "changeset:\\t{rev}:{short(node)}\\ntag:\\t{tags}\\nuser:\\t{author}\\ndate:\\t{shortdate(date)}\\nsummary:\\t{desc}\\nbranch:\\t{branch}\\ngraph:\\t{graphnode}\\n\\n";
+var graphTemplate = "{rev}\\n\\n";
+
 function getStatus(repo, callback){
     var repo = new HGRepo(repo.path);
     var status = [];
@@ -136,7 +139,7 @@ function getHistory(repo, page, sort, itemsPerPage, promise){
         count: 0
     };
     var repo = new HGRepo(repo.path);
-    repo.runCommand("log", "", function(err, output){
+    repo.runCommand("log", ["--template", logTemplate], function(err, output){
         history.count = output.length;
         for (var i in output){
             if (output[i].body) {
@@ -156,15 +159,42 @@ function getHistory(repo, page, sort, itemsPerPage, promise){
                 history.data.push(historyItem);
             }
         }
-        history.data = history.data.slice(getPageStart(itemsPerPage, page), getPageEnd(itemsPerPage,page, history.count));
-        promise(history);
+        //Run a second command to get the graph layout
+        repo.runCommand("log", ["-G", "--template", graphTemplate], function(err, output){
+            var graphRegex = /.*  ([0-9]+)/g;
+            var changeset = {};
+            var graph = [];
+            for (var i in output){
+                var match = graphRegex.exec(output[i].body.toString());
+                if (match != null){
+                    if (graph.length > 1){
+                        addGraphToHistory(history.data, graph, changeset);
+                        graph = [output[i].body.toString().split("  ")[0].trim()];
+                        changeset = match[1];
+                    }
+                } else {
+                    graph.push(output[i].body.toString().trim());
+                }
+            }
+            history.data = history.data.slice(getPageStart(itemsPerPage, page), getPageEnd(itemsPerPage,page, history.count));
+            promise(history);
+        });
+
     });
+}
+
+function addGraphToHistory(history, graph, changeset){
+    for (var i in history){
+        if (history[i].changeset == changeset){
+            history[i].graph = graph;
+            return;
+        }
+    }
 }
 
 function update(repo, branchName, promise){
     var repo = new HGRepo(repo.path);
     repo.runCommand("update", ["--clean", "\""+branchName+"\""], function(err, output){
-        console.log(err);
         if (err){
             console.log(err);
             promise(false);
