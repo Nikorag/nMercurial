@@ -13,10 +13,11 @@ html(lang='en')
             md-sidenav.md-sidenav-left(md-component-id="left",md-is-locked-open="true",md-whiteframe="4")
                 md-toolbar.md-theme-indigo
                     .md-toolbar-tools
-                        md-button.md-icon-button(aria-label='Home', ng-disabled='true', ng-click="goHome()")
-                            md-icon(md-svg-icon='images/home.svg')
                         h2(flex='', md-truncate='') Menu
                 md-content(layout-margin="", style="height: 100%", layout="column")
+                    md-button.md-raised.md-primary(ng-click="goHome()")
+                        i.fa.fa-home
+                        | &nbsp;Home
                     md-sidemenu(locked="true")
                         md-sidemenu-group
                             md-sidemenu-content(md-icon="code-fork", md-heading="branches")
@@ -29,9 +30,9 @@ html(lang='en')
                                 span(ng-repeat="tag in tags")
                                     md-sidemenu-button(ng-click="null")
                                         p {{tag.name}}
-                        md-sidemenu-group
-                            md-sidemenu-content(md-icon="archive", md-heading="shelves")
-                    md-button.md-raised.md-primary(ng-click="refreshRepo()") Refresh
+                        //md-sidemenu-group
+                        //    md-sidemenu-content(md-icon="archive", md-heading="shelves")
+                    md-button.md-accent(ng-click="refreshRepo()") Refresh
             div#repoGrid(flex="", layout="column")
                 include fragments/toolbar
                 md-content(layout-padding="")
