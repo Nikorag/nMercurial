@@ -67,7 +67,7 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
             .cancel('Cancel');
 
         $mdDialog.show(confirm).then(function() {
-            hg.changeBranch(branchName, $scope.repoName).then(function(result){
+            hg.update(branchName, $scope.repoName).then(function(result){
                 for (var i in $scope.branches){
                     $scope.branches[i].active = false;
                 }
@@ -83,6 +83,25 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
             //TODO didn't confirm
         });
 
+    }
+
+    $scope.changeToRepo = function(changeset, ev){
+        var confirm = $mdDialog.confirm()
+            .title('Change to revision '+changeset)
+            .textContent('Would you like to change to this revision and discard all changes')
+            .targetEvent(ev)
+            .ok('Ok')
+            .cancel('Cancel');
+
+        $mdDialog.show(confirm).then(function() {
+            hg.update(changeset, $scope.repoName).then(function(result){
+                $scope.updateCurrentRevision(function(){});
+                $rootScope.reloadDataGrid();
+                $scope.clearSelection();
+            });
+        }, function() {
+            //TODO didn't confirm
+        });
     }
 
     $scope.viewRevision = function(changeSet){

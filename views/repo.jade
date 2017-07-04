@@ -22,7 +22,7 @@ html(lang='en')
                         md-sidemenu-group
                             md-sidemenu-content(md-icon="code-fork", md-heading="branches")
                                 span(ng-repeat="branch in branches")
-                                    md-sidemenu-button(ng-click="changeBranch(branch.name, $event)")
+                                    md-sidemenu-button(ng-dblclick="changeBranch(branch.name, $event)")
                                         i.fa.fa-circle-o(ng-if="branch.active", class="branchActive")
                                         p(ng-class="branch.active ? 'active-branch' : ''") {{branch.name}}
                         md-sidemenu-group
@@ -57,7 +57,7 @@ html(lang='en')
                                         th
                                             span Revision
                                 tbody
-                                    tr(grid-item='', ng-class="(item.revision == currentRevision ? 'current' : '')+' '+(item.changeset == selectedChangeset ? 'selected' : '')", ng-click="viewRevision(item.changeset)")
+                                    tr(grid-item='', ng-class="(item.revision == currentRevision ? 'current' : '')+' '+(item.changeset == selectedChangeset ? 'selected' : '')", ng-click="viewRevision(item.changeset)", ng-dblclick="changeToRepo(item.changeset, $event)")
                                         td.mdl-data-table__cell--non-numeric
                                             span()
                                         td(ng-bind='item.summary')

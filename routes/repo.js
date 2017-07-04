@@ -43,10 +43,10 @@ router.get('/repo/getHistory', function(req, res, next) {
     });
 });
 
-router.get('/repo/changeBranch', function(req, res, next){
+router.get('/repo/update', function(req, res, next){
     var repo = hgService.getRepo(req.param("repoName"));
-    var branchName  = req.param("branchName");
-    hgService.changeBranch(repo, branchName, function (response) {
+    var branchName  = req.param("changeset");
+    hgService.update(repo, branchName, function (response) {
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(response));
     });

@@ -40,10 +40,10 @@ angular.module('BlankApp').service('hg', function($http, $q, $mdDialog){
         return deferred.promise;
     };
 
-    this.changeBranch = function(branchName, repoName){
+    this.update = function(changeset, repoName){
         var deferred = $q.defer();
         showSpinner();
-        $http.get("/repo/changeBranch?repoName="+repoName+"&branchName="+branchName).then(function(result){
+        $http.get("/repo/update?repoName="+repoName+"&changeset="+changeset).then(function(result){
             if (result.data){
                 hideSpinner();
                 deferred.resolve();

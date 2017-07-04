@@ -16,7 +16,7 @@ module.exports = {
     removeRepo : removeRepo, //Remove a repo
     getBranches : getBranches, //Get branches of a repo
     getHistory : getHistory, //Get history of a repo
-    changeBranch : changeBranch, //Change branch on a repo
+    update : update, //Change branch on a repo
     getCurrentRevision : getCurrentRevision, //Get repo's current revision
     getChanges : getChanges, //Get changes in a file and revision
     getModifiedFiles : getModifiedFiles, //Get modified files in a revision
@@ -159,7 +159,7 @@ function getHistory(repo, page, sort, itemsPerPage, promise){
     });
 }
 
-function changeBranch(repo, branchName, promise){
+function update(repo, branchName, promise){
     var repo = new HGRepo(repo.path);
     repo.runCommand("update", ["--clean", "\""+branchName+"\""], function(err, output){
         console.log(err);
