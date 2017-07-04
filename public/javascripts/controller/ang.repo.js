@@ -22,6 +22,7 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
     };
 
     function getData(params, callback){
+        showSpinner();
         $scope.updateCurrentRevision(function(){
             hg.getHistory(params, $scope.repoName).then(function(result){
                 if ($scope.currentRevision == "" && getSearchParamsFromString(params).page == '1'){
@@ -34,9 +35,11 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
                         summary : "Uncommited Changes"
                     }
                     result.data.splice(0,0,uncommitedChanges);
+                    hideSpinner();
                     callback(result.data, $scope.totalHistory);
                 } else {
                     $scope.totalHistory = result.count;
+                    hideSpinner();
                     callback(result.data, result.count);
                 }
             });
@@ -257,6 +260,14 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
             params[couple[0]] = couple[1];
         }
         return params;
+    }
+
+    function showSpinner(){
+        $('.spinnerContainer').show();
+    }
+
+    function hideSpinner(){
+        $('.spinnerContainer').hide();
     }
 })
 angular.module('BlankApp').controller("incomingChangesCtrl", function($scope, $http, $mdDialog, hg, libraryService, result){
