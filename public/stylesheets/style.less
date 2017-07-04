@@ -4,6 +4,7 @@
 @light-red: #ef9a9a;
 @light-blue: #4fc3f7;
 @indigo: rgb(40,53,147);
+@accent: rgb(255,64,129);
 
 .z-depth-2 {
   box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.3);
@@ -168,7 +169,7 @@
     font-weight: bold;
   }
   .selected {
-    background-color: @indigo;
+    background-color: @accent;
     color: white;
   }
   .additions {
@@ -281,6 +282,10 @@
     position: relative;
     top: -8px;
   }
+  .selectedFile {
+    background-color: @accent;
+    color: white;
+  }
 }
 .spinnerContainer {
   position: absolute;
@@ -291,4 +296,13 @@
     margin: 0 auto;
     top: 50%;
   }
+}
+
+.overflow-left {
+  white-space: nowrap;
+  overflow: hidden;              /* "overflow" value must be different from "visible" */
+  text-overflow:    ellipsis;
+  width:170px;
+  direction:rtl;
+  text-align:left;
 }

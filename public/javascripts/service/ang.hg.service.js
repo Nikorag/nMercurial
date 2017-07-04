@@ -66,7 +66,6 @@ angular.module('BlankApp').service('hg', function($http, $q){
     this.getFileChanges = function(changeset, file, repoName){
         var deferred = $q.defer();
         if (file.mod == '?'){
-            console.log(JSON.stringify(file));
             $http.get("/repo/fullPatch?repoName=" + repoName + "&filename=" + file.filename).then(function (result) {
                 deferred.resolve(result.data[0]);
             });

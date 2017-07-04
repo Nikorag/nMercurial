@@ -209,7 +209,6 @@ function getChanges(repo, revision, filename, promise){
     var repo = new HGRepo(repo.path);
     repo.runCommand("diff", ["-c", revision, filename], function(err, output) {
         if (err) {
-            console.log("Jamie error");
             console.log(err);
             promise({});
         } else {
@@ -218,7 +217,6 @@ function getChanges(repo, revision, filename, promise){
                 diff += output[i].body;
             }
             var files = parse(diff);
-            console.log(JSON.stringify(files));
             promise(files);
         }
     });

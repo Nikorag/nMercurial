@@ -9,6 +9,7 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
     $scope.fileChanges = {}; //Changes to selected file
     $scope.totalHistory = 0;
     $scope.gridActions = {};
+    $scope.selectedFile = {}; //Currently diffing file
     $scope.gridOptions = {
         sort: {
             predicate: 'date',
@@ -70,7 +71,6 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
                 }
 
                 $scope.branches.filter(function(branch){
-                    console.log(branch.name);
                     return branch.name == branchName;
                 })[0].active = true;
                 $scope.updateCurrentRevision(function(){});
@@ -88,10 +88,12 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
             $scope.selectedChangeset = changeSet;
             $scope.changedFiles = result;
             $scope.fileChanges = {};
+            $scope.selectedFile = {};
         });
     }
 
     $scope.getFileChanges = function(file){
+        $scope.selectedFile = file;
         hg.getFileChanges($scope.selectedChangeset, file, $scope.repoName).then(function (result) {
             $scope.fileChanges = result;
         });
@@ -154,6 +156,7 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
         $scope.selectedChangeset = {};
         $scope.changedFiles = {};
         $scope.fileChanges = {};
+        $scope.selectedFile= {};
     }
 
     $scope.undo = function(file, ev){

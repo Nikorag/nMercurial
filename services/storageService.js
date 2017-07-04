@@ -26,7 +26,6 @@ function getRepo(repoName){
 
 function saveRepo(repo){
     repos = getRepos();
-    console.log(validateNewRepo(repo, repos));
     if (validateNewRepo(repo, repos)) {
         repos.push(repo);
         storage.setItemSync("repos", repos);
