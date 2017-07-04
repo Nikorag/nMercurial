@@ -1,0 +1,15 @@
+.authPopup.popup
+    md-toolbar.md-hue-2
+        .md-toolbar-tools
+            md-button.md-icon-button(aria-label='Settings', ng-disabled='true')
+                md-icon(md-svg-icon='images/logo.svg')
+            h2(flex='', md-truncate='') Authenticate
+    md-content(layout-padding="")
+        div(layout="column", layout-padding="")
+            md-input-container
+                label Username
+                input(ng-model='auth.username', ng-init="auth.username = '"+username+"'")
+            md-input-container
+                label Password
+                input(ng-model='auth.password', type="password")
+            md-button.md-raised.md-primary(ng-click="auth(auth)") Authenticate

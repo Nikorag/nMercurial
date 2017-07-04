@@ -8,6 +8,7 @@ var lessMiddleware = require('less-middleware');
 
 var libraryRoute = require('./routes/library');
 var repoRoute = require('./routes/repo');
+var authRoute = require('./routes/auth');
 
 var app = express();
 
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', libraryRoute);
 app.use('/', repoRoute);
+app.use('/', authRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

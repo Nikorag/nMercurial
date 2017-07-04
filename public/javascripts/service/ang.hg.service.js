@@ -1,4 +1,4 @@
-angular.module('BlankApp').service('hg', function($http, $q){
+angular.module('BlankApp').service('hg', function($http, $q, $mdDialog){
 
     this.getBranches = function(repoName){
         var deferred = $q.defer();
@@ -128,6 +128,70 @@ angular.module('BlankApp').service('hg', function($http, $q){
            deferred.resolve();
         });
         return deferred.promise;
+    }
+
+
+    this.getIncoming = getIncoming;
+
+    function getIncoming(repoName, repoUrl, username, password){
+        var deferred = $q.defer();
+        showSpinner();
+        $http({
+            method : "POST",
+            url: "/repo/incoming",
+            data: {
+                "repoName" : repoName,
+                "username" : username,
+                "password" : password
+            }
+        }).then(function(response){
+            if ((response.data != false && response.data != "false") || response.data == ''){
+                hideSpinner();
+                deferred.resolve({"username" : username, "password" : password, "changes" : response.data});
+            } else {
+                //Show username & password dialog
+                hideSpinner();
+                showUsernameAndPassword(getUsernameFromUrl(repoUrl)).then(function(auth){
+                    getIncoming(repoName, repoUrl, auth.username, auth.password).then(function(result){
+                        deferred.resolve(result);
+                    });
+                });
+            }
+        });
+        return deferred.promise;
+    }
+
+    this.pull = function(repoName, repoUrl, username, password){
+        var deferred = $q.defer();
+        showSpinner();
+        $http({
+            method: "POST",
+            url: "/repo/pull",
+            data: {
+                "repoName": repoName,
+                "username": username,
+                "password": password
+            }
+        }).then(function(result){
+            hideSpinner();
+            deferred.resolve();
+        });
+        return deferred.promise;
+    }
+
+    function showUsernameAndPassword(username){
+        return $mdDialog.show({
+            controller: "authPopupCtrl",
+            templateUrl: '/auth?username='+username,
+            parent: angular.element(document.body),
+            clickOutsideToClose: true,
+        });
+    }
+
+    function getUsernameFromUrl(url){
+        var urlMatch = /^(https?\:\/\/)(.*)/g;
+        var match = urlMatch.exec(url);
+        return match[2].includes("@") ? match[2].split("@")[0] :"";
     }
 
     function showSpinner(){

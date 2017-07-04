@@ -4,9 +4,11 @@ var router = express.Router();
 
 /* Render the repo page */
 router.get('/repo', function(req, res, next) {
+    var repo = hgService.getRepo(req.param("repoName"));
     var model = {
         title: "nMercurial hg App",
-        subTitle: req.param("repoName"),
+        subTitle: repo.name,
+        repoUrl: repo.url
     }
     res.render('repo', model);
 });
@@ -99,8 +101,12 @@ router.post('/repo/commit', function(req, res, next){
     var filenames = req.param("filenames");
     var commitMsg = req.param("commitMsg");
     hgService.commit(repo, filenames, commitMsg, function(){
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify(true));
+        try {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(true));
+        } catch (e){
+            console.log(e);
+        }
     });
 });
 
@@ -111,6 +117,37 @@ router.get("/repo/revertFile", function(req, res, next){
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(true));
     });
+});
+
+//Get incoming without credentials
+router.post("/repo/incoming", function(req, res, next){
+    var repo = hgService.getRepo(req.param("repoName"));
+    var username = req.param("username");
+    var password = req.param("password");
+    hgService.incoming(repo, username, password, function(result){
+        try {
+            res.send(JSON.stringify(result));
+        } catch (e) {
+
+        }
+    });
+});
+
+router.post("/repo/pull", function(req, res, next){
+    var repo = hgService.getRepo(req.param("repoName"));
+    var username = req.param("username");
+    var password = req.param("password");
+    hgService.pull(repo, username, password, function(result){
+        try {
+            res.send(JSON.stringify(result));
+        } catch (e) {
+
+        }
+    });
+});
+
+router.get("/repo/incomingChangesPopup", function(req, res, next){
+    res.render('incomingChanges');
 });
 
 module.exports = router;

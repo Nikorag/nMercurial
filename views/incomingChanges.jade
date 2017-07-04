@@ -1,0 +1,39 @@
+.authPopup.popup
+    md-toolbar.md-hue-2
+        .md-toolbar-tools
+            md-button.md-icon-button(aria-label='Settings', ng-disabled='true')
+                md-icon(md-svg-icon='images/logo.svg')
+            h2(flex='', md-truncate='') Incoming Changes
+    md-content(layout-padding="")
+        div(layout="row")
+            span(flex="")
+            md-button.md-raised.md-primary(ng-click="pull()", ng-disabled="!incomingChanges") Pull
+        div(grid-data='', grid-options='gridOptions', grid-actions='gridActions', server-pagination="true")
+            div
+                table.mdl-data-table.mdl-js-data-table.mdl-data-table--selectable.mdl-shadow--2dp
+                    thead
+                        tr
+                            th
+                                span
+                            th
+                                span Description
+                            th.sortable(sortable='changeset')
+                                span Changeset
+                            th.sortable(sortable='user')
+                                span Author
+                            th.sortable(sortable='date')
+                                span Date
+                            th
+                                span Revision
+                    tbody
+                        tr(grid-item='', ng-click="viewRevision(item.changeset)")
+                            td.mdl-data-table__cell--non-numeric
+                                span()
+                            td(ng-bind='item.summary')
+                            td(ng-bind="item.changeset")
+                            td(ng-bind='item.user')
+                            td(ng-bind='item.date')
+                            td(ng-bind='item.revision')
+        div(layout="row")
+            span(flex="")
+            md-button.md-raised.md-primary(ng-click="pull()", ng-disabled="!incomingChanges") Pull

@@ -1,6 +1,7 @@
 angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDialog, hg, $rootScope, $location){
 
     $scope.repoName = $('.repoName').attr("data-repoName"); //Current reponame, rendered on the page by the route
+    $scope.repoUrl = $('.repoName').attr("data-repoUrl"); //Current reponame, rendered on the page by the route
     $scope.branches = []; //List of branches
     $scope.tags = []; //List of tags
     $scope.currentRevision = "nothing"; //Current revision hash
@@ -16,7 +17,8 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
             direction: 'asc'
         },
         data: [],
-        getData : getData
+        getData : getData,
+        main : true
     };
 
     function getData(params, callback){
@@ -182,6 +184,25 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
         });
     }
 
+    $scope.pull = function(){
+        hg.getIncoming($scope.repoName, $scope.repoUrl, undefined, undefined).then(function(result){
+            $mdDialog.show({
+                controller: "incomingChangesCtrl",
+                templateUrl: '/repo/incomingChangesPopup',
+                parent: angular.element(document.body),
+                clickOutsideToClose: true,
+                locals: {result : result}
+            }).then(function(result){
+                if (result){
+                    hg.pull($scope.repoName, $scope.repoUrl, result.username, result.password).then(function(result){
+                        $scope.refreshRepo();
+                        $scope.clearSelection();
+                    });
+                }
+            })
+        });
+    }
+
     //Render the initial page
     hg.getBranches($scope.repoName).then(function(result){
         $scope.branches = result;
@@ -199,4 +220,22 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
         }
         return params;
     }
+})
+angular.module('BlankApp').controller("incomingChangesCtrl", function($scope, $http, $mdDialog, hg, libraryService, result){
+    $scope.incomingChanges = result.changes.length > 0;
+    $scope.gridOptions = {
+        sort: {
+            predicate: 'date',
+            direction: 'asc'
+        },
+        data: $scope.incomingChanges ? result.changes : [{
+            summary: "No incoming changes"
+        }]
+    };
+
+    $scope.pull = function(){
+        $mdDialog.hide({"username" : result.username, "password" : result.password});
+    }
 });
+
+

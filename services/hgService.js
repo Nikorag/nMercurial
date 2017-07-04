@@ -24,7 +24,9 @@ module.exports = {
     getTags : getTags, //Get a list of tags for a repo
     fullPatch : fullPatch, //patch file for unversioned files
     commit : commit, //Commit
-    revertFile : revertFile //Revert a file
+    revertFile : revertFile, //Revert a file
+    incoming : incoming,
+    pull : pull
 }
 
 function getStatus(repo, callback){
@@ -224,10 +226,7 @@ function getChanges(repo, revision, filename, promise){
 
 function clone(url, dest, username, password){
     return new Promise(function(resolve, reject){
-        var destPath = path.resolve(dest);
-        var urlMatch = /^(https?\:\/\/)(.*)/g;
-        var match = urlMatch.exec(url);
-        var fullUrl = `${match[1]}${username}:${password}@${match[2]}`;
+        var fullUrl = addAuthToUrl(username, password, url);
         new HGRepo().runCommand("clone", [fullUrl, destPath], function(err, output){
             if (err){
                 reject(err);
@@ -332,4 +331,49 @@ function revertFile(repo, filename, promise){
             });
         }
     })
+}
+
+function incoming(repo, username, password, promise){
+    var url = username !== undefined ? addAuthToUrl(username, password, repo.url) : repo.url;
+    var repo = new HGRepo(repo.path);
+    repo.runCommand("incoming", url, function(err, output){
+       if (err){
+           console.log(err);
+           promise(false);
+           return;
+       } else {
+           //Create the incoming changesets (this will be messy, might clean up later)
+           var incomingChanges = [];
+           for (var i in output){
+               if (output[i].body && output[i].body != "" && output[i].body.toString().includes("changeset: ")){
+                   var incomingChange = {};
+                   for (var x=i;x<=parseInt(i)+6;x++){
+                       try {
+                           incomingChange[output[x].body.split(":")[0].trim()] = output[x].body.split(":")[1].trim();
+                       } catch (e){
+                           //Some lines are empty, not sure why
+                       }
+                   }
+                   incomingChanges.push(incomingChange);
+               }
+           }
+           promise(incomingChanges);
+       }
+    });
+}
+
+function pull(repo, username, password, promise){
+    var url = username !== undefined ? addAuthToUrl(username, password, repo.url) : repo.url;
+    var repo = new HGRepo(repo.path);
+    repo.runCommand("pull", url, function(err, output){
+       promise();
+    });
+}
+
+function addAuthToUrl(username, password, url){
+    var urlMatch = /^(https?\:\/\/)(.*)/g;
+    var match = urlMatch.exec(url);
+    var secondStep = match[2].includes("@") ? match[2].split("@")[1] : match[2];
+    var fullUrl = `${match[1]}${username}:${password}@${secondStep}`;
+    return fullUrl;
 }
