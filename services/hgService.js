@@ -23,7 +23,8 @@ module.exports = {
     clone : clone, //Clone a repo
     getTags : getTags, //Get a list of tags for a repo
     fullPatch : fullPatch, //patch file for unversioned files
-    commit : commit //Commit
+    commit : commit, //Commit
+    revertFile : revertFile //Revert a file
 }
 
 function getStatus(repo, callback){
@@ -293,7 +294,6 @@ function commit(repo, filenames, commitMsg, promise){
                 repo.commit(filenames, commitOpts, function(err, output){
                     if (err){
                         console.log(err);
-                        throw err;
                     }
                     promise();
                 });
@@ -301,5 +301,37 @@ function commit(repo, filenames, commitMsg, promise){
 
         });
     });
+}
 
+function revertFile(repo, filename, promise){
+    var fileStatus = ""
+    var repo = new HGRepo(repo.path);
+    repo.runCommand("status", [filename], function(err, output){
+        for (var i in output){
+            var next = parseInt(i)+1;
+            if (output[i].body == '? '){
+                fileStatus = "doNothing";
+            } else if (output[i].body == "A "){
+                fileStatus = "forget";
+            } else if (output[i].body == "M " || output[i].body == "! "){
+                fileStatus = "revert";
+            }
+        }
+        if (fileStatus == "forget") {
+            //Forget the file
+            repo.runCommand("forget", [filename], function (err, output) {
+                promise();
+            });
+        } else if (fileStatus == "revert"){
+            //Revert the file
+            repo.runCommand("revert", [filename, "--no-backup"], function (err, output) {
+                promise();
+            });
+        } else if (fileStatus == "doNothing") {
+            //Delete the file
+            fs.unlink(path.join(repo.path, filename), function(){
+               promise();
+            });
+        }
+    })
 }

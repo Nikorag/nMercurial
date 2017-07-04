@@ -7,6 +7,8 @@ html(lang='en')
         link(rel="stylesheet", href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-blue.min.css")
     body(ng-app='BlankApp', ng-cloak='')
         span.repoName(style="display:none;", data-repoName=subTitle)
+        span.spinnerContainer(layout-align="center center", style="display: none;")
+            md-progress-circular
         div(ng-controller="repoCtrl", layout="row")
             md-sidenav.md-sidenav-left(md-component-id="left",md-is-locked-open="true",md-whiteframe="4")
                 md-toolbar.md-theme-indigo
@@ -66,15 +68,16 @@ html(lang='en')
                             md-list.fileList(flex="")
                                 md-subheader.md-sticky Files
                                 span(ng-repeat="file in changedFiles track by $index")
-                                    md-list-item.md-1-line(ng-click="getFileChanges(file)", ng-class="'fileItem-'+(file.mod != '?' ? file.mod : 'unknown')")
+                                    md-list-item.md-1-line(ng-click="getFileChanges(file)", ng-class="'fileItem-'+(file.mod != '?' ? (file.mod == '!' ? 'R' : file.mod) : 'unknown')", flex="")
                                         md-checkbox.md-primary(ng-if="selectedChangeset == ''", data-filename="{{file.filename}}")
-                                        i.fa.fa-plus(ng-if="file.mod == 'A'")
-                                        i.fa.fa-pencil(ng-if="file.mod == 'M'")
-                                        i.fa.fa-ban(ng-if="file.mod == 'R'")
-                                        i.fa.fa-question-circle(ng-if="file.mod == '?'")
-                                        .md-list-item-text(layout="column")
-                                            p
-                                                span {{file.filename}}
+                                        i.fa.fa-plus.filestatusIcon(ng-if="file.mod == 'A'")
+                                        i.fa.fa-pencil.filestatusIcon(ng-if="file.mod == 'M'")
+                                        i.fa.fa-ban.filestatusIcon(ng-if="file.mod == 'R' || file.mod == '!'")
+                                        i.fa.fa-question-circle.filestatusIcon(ng-if="file.mod == '?'")
+                                        span {{file.filename}}
+                                        span(flex="")
+                                        md-button.md-icon-button(ng-if="selectedChangeset == ''", data-filename="{{file.filename}}", ng-click="undo(file, $event)")
+                                            i.fa.fa-undo
                         div(flex="60", layout="column")
                             include fragments/diff.jade
                     div(layout="column", ng-if="selectedChangeset == ''")

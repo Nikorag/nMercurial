@@ -2,6 +2,8 @@ html(lang='en')
     head
         include fragments/head.jade
     body(ng-app='BlankApp', ng-cloak='')
+        span.spinnerContainer(layout-align="center center", style="display: none;")
+            md-progress-circular
         div(ng-controller="libraryCtrl")
             include fragments/toolbar.jade
             md-content

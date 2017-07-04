@@ -119,7 +119,7 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
                 .title('Commit file(s)')
                 .textContent('Would you like to commit file(s)')
                 .targetEvent(ev)
-                .ok('commit')
+                .ok('Commit')
                 .cancel('Cancel');
 
             $mdDialog.show(confirm).then(function () {
@@ -141,13 +141,42 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
     }
 
     $scope.refreshRepo = function(){
-        $rootScope.reloadDataGrid();
+        $scope.updateCurrentRevision(function(){
+            $rootScope.reloadDataGrid();
+            if ($scope.selectedChangeset == '' && $scope.currentRevision != ''){
+                $scope.clearSelection();
+            }
+        });
+
     }
 
     $scope.clearSelection = function(){
         $scope.selectedChangeset = {};
         $scope.changedFiles = {};
         $scope.fileChanges = {};
+    }
+
+    $scope.undo = function(file, ev){
+
+        var confirm = $mdDialog.confirm()
+            .title('Revert file')
+            .textContent('Would you like to revert this file? (It will be deleted if it is currently untracked)')
+            .targetEvent(ev)
+            .ok('Revert')
+            .cancel('Cancel');
+
+        $mdDialog.show(confirm).then(function () {
+            hg.revertFile($scope.repoName, file.filename).then(function(){
+                //Check to see if we have any remaining uncommited files, if we don't refresh the list, if not just remove this file from the list
+                if ($scope.changedFiles.length > 1){
+                    $scope.viewRevision($scope.selectedChangeset);
+                } else {
+                    $scope.refreshRepo();
+                }
+            });
+        }, function () {
+            //TODO reject deleting a repo
+        });
     }
 
     //Render the initial page

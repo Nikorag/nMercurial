@@ -42,10 +42,13 @@ angular.module('BlankApp').service('hg', function($http, $q){
 
     this.changeBranch = function(branchName, repoName){
         var deferred = $q.defer();
+        showSpinner();
         $http.get("/repo/changeBranch?repoName="+repoName+"&branchName="+branchName).then(function(result){
             if (result.data){
+                hideSpinner();
                 deferred.resolve();
             } else {
+                hideSpinner();
                 deferred.reject();
             }
         });
@@ -85,11 +88,13 @@ angular.module('BlankApp').service('hg', function($http, $q){
 
     this.cloneRepo = function(repo){
         var deferred = $q.defer();
+        showSpinner();
         $http({
             method : "POST",
             url: "/cloneRepo",
             data: repo
         }).then(function(response){
+            hideSpinner();
            deferred.resolve();
         });
         return deferred.promise;
@@ -97,6 +102,7 @@ angular.module('BlankApp').service('hg', function($http, $q){
 
     this.commit = function(repoName, filenames, commitMsg){
         var deferred = $q.defer();
+        showSpinner();
         $http({
             method : "POST",
             url : "/repo/commit",
@@ -106,8 +112,30 @@ angular.module('BlankApp').service('hg', function($http, $q){
                 "commitMsg" : commitMsg
             }
         }).then(function(response){
+            hideSpinner();
             deferred.resolve();
         })
         return deferred.promise;
+    }
+
+    this.revertFile = function(repoName, filename){
+        var deferred = $q.defer();
+        showSpinner();
+        $http({
+            method : "GET",
+            url: "/repo/revertFile?repoName="+repoName+"&filename="+encodeURI(filename)
+        }).then(function(response){
+           hideSpinner();
+           deferred.resolve();
+        });
+        return deferred.promise;
+    }
+
+    function showSpinner(){
+        $('.spinnerContainer').show();
+    }
+
+    function hideSpinner(){
+        $('.spinnerContainer').hide();
     }
 });

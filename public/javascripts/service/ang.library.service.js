@@ -21,17 +21,28 @@ angular.module('BlankApp').service('libraryService', function($http, $q) {
 
     this.addRepo = function(repo){
         var deferred = $q.defer();
+        showSpinner();
         $http({
             url: "/addRepo",
             method: "GET",
             params: repo
         }).then(function(result){
             if (result.data == true){
+                hideSpinner();
                 deferred.resolve();
             } else {
+                hideSpinner();
                 deferred.reject();
             }
         })
         return deferred.promise;
+    }
+
+    function showSpinner(){
+        $('.spinnerContainer').show();
+    }
+
+    function hideSpinner(){
+        $('.spinnerContainer').hide();
     }
 });

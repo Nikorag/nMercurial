@@ -104,4 +104,13 @@ router.post('/repo/commit', function(req, res, next){
     });
 });
 
+router.get("/repo/revertFile", function(req, res, next){
+    var repo = hgService.getRepo(req.param("repoName"));
+    var filename = req.param("filename");
+    hgService.revertFile(repo, filename, function(){
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(true));
+    });
+});
+
 module.exports = router;
