@@ -34,7 +34,7 @@ html(lang='en')
                         //    md-sidemenu-content(md-icon="archive", md-heading="shelves")
                     md-button.md-accent(ng-click="refreshRepo()") Refresh
                     md-button.md-primary(ng-click="pull()") Pull
-                    md-button.md-primary(ng-click="null", disabled="true") Push
+                    md-button.md-primary(ng-click="push()") Push
             div#repoGrid(flex="", layout="column")
                 include fragments/toolbar
                 md-content(layout-padding="")

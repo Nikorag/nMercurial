@@ -161,12 +161,60 @@ angular.module('BlankApp').service('hg', function($http, $q, $mdDialog){
         return deferred.promise;
     }
 
+    this.getOutgoing = getOutgoing;
+
+    function getOutgoing(repoName, repoUrl, username, password){
+        var deferred = $q.defer();
+        showSpinner();
+        $http({
+            method : "POST",
+            url: "/repo/outgoing",
+            data: {
+                "repoName" : repoName,
+                "username" : username,
+                "password" : password
+            }
+        }).then(function(response){
+            if ((response.data != false && response.data != "false") || response.data == ''){
+                hideSpinner();
+                deferred.resolve({"username" : username, "password" : password, "changes" : response.data});
+            } else {
+                //Show username & password dialog
+                hideSpinner();
+                showUsernameAndPassword(getUsernameFromUrl(repoUrl)).then(function(auth){
+                    getOutgoing(repoName, repoUrl, auth.username, auth.password).then(function(result){
+                        deferred.resolve(result);
+                    });
+                });
+            }
+        });
+        return deferred.promise;
+    }
+
     this.pull = function(repoName, repoUrl, username, password){
         var deferred = $q.defer();
         showSpinner();
         $http({
             method: "POST",
             url: "/repo/pull",
+            data: {
+                "repoName": repoName,
+                "username": username,
+                "password": password
+            }
+        }).then(function(result){
+            hideSpinner();
+            deferred.resolve();
+        });
+        return deferred.promise;
+    }
+
+    this.push = function(repoName, repoUrl, username, password){
+        var deferred = $q.defer();
+        showSpinner();
+        $http({
+            method: "POST",
+            url: "/repo/push",
             data: {
                 "repoName": repoName,
                 "username": username,

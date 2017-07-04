@@ -119,7 +119,7 @@ router.get("/repo/revertFile", function(req, res, next){
     });
 });
 
-//Get incoming without credentials
+//Get incoming
 router.post("/repo/incoming", function(req, res, next){
     var repo = hgService.getRepo(req.param("repoName"));
     var username = req.param("username");
@@ -146,8 +146,39 @@ router.post("/repo/pull", function(req, res, next){
     });
 });
 
+//Get outgoing
+router.post("/repo/outgoing", function(req, res, next){
+    var repo = hgService.getRepo(req.param("repoName"));
+    var username = req.param("username");
+    var password = req.param("password");
+    hgService.outgoing(repo, username, password, function(result){
+        try {
+            res.send(JSON.stringify(result));
+        } catch (e) {
+
+        }
+    });
+});
+
+router.post("/repo/push", function(req, res, next){
+    var repo = hgService.getRepo(req.param("repoName"));
+    var username = req.param("username");
+    var password = req.param("password");
+    hgService.push(repo, username, password, function(result){
+        try {
+            res.send(JSON.stringify(result));
+        } catch (e) {
+
+        }
+    });
+});
+
 router.get("/repo/incomingChangesPopup", function(req, res, next){
     res.render('incomingChanges');
+});
+
+router.get("/repo/outgoingChangesPopup", function(req, res, next){
+    res.render('outgoingChanges');
 });
 
 module.exports = router;

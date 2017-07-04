@@ -26,7 +26,9 @@ module.exports = {
     commit : commit, //Commit
     revertFile : revertFile, //Revert a file
     incoming : incoming,
-    pull : pull
+    pull : pull,
+    outgoing : outgoing,
+    push : push
 }
 
 function getStatus(repo, callback){
@@ -367,6 +369,43 @@ function pull(repo, username, password, promise){
     var repo = new HGRepo(repo.path);
     repo.runCommand("pull", url, function(err, output){
        promise();
+    });
+}
+
+function outgoing(repo, username, password, promise){
+    var url = username !== undefined ? addAuthToUrl(username, password, repo.url) : repo.url;
+    var repo = new HGRepo(repo.path);
+    repo.runCommand("outgoing", url, function(err, output){
+        if (err){
+            console.log(err);
+            promise(false);
+            return;
+        } else {
+            //Create the outgoing changesets (this will be messy, might clean up later)
+            var outgoingChanges = [];
+            for (var i in output){
+                if (output[i].body && output[i].body != "" && output[i].body.toString().includes("changeset: ")){
+                    var outgoingChange = {};
+                    for (var x=i;x<=parseInt(i)+6;x++){
+                        try {
+                            outgoingChange[output[x].body.split(":")[0].trim()] = output[x].body.split(":")[1].trim();
+                        } catch (e){
+                            //Some lines are empty, not sure why
+                        }
+                    }
+                    outgoingChanges.push(outgoingChange);
+                }
+            }
+            promise(outgoingChanges);
+        }
+    });
+}
+
+function push(repo, username, password, promise){
+    var url = username !== undefined ? addAuthToUrl(username, password, repo.url) : repo.url;
+    var repo = new HGRepo(repo.path);
+    repo.runCommand("push", url, function(err, output){
+        promise();
     });
 }
 

@@ -220,6 +220,25 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
                 }
             })
         });
+    };
+
+    $scope.push = function(){
+        hg.getOutgoing($scope.repoName, $scope.repoUrl, undefined, undefined).then(function(result){
+            $mdDialog.show({
+                controller: "outgoingChangesCtrl",
+                templateUrl: '/repo/outgoingChangesPopup',
+                parent: angular.element(document.body),
+                clickOutsideToClose: true,
+                locals: {result : result}
+            }).then(function(result){
+                if (result){
+                    hg.push($scope.repoName, $scope.repoUrl, result.username, result.password).then(function(result){
+                        $scope.refreshRepo();
+                        $scope.clearSelection();
+                    });
+                }
+            })
+        });
     }
 
     //Render the initial page
@@ -253,6 +272,22 @@ angular.module('BlankApp').controller("incomingChangesCtrl", function($scope, $h
     };
 
     $scope.pull = function(){
+        $mdDialog.hide({"username" : result.username, "password" : result.password});
+    }
+})
+angular.module('BlankApp').controller("outgoingChangesCtrl", function($scope, $http, $mdDialog, hg, libraryService, result){
+    $scope.outgoingChanges = result.changes.length > 0;
+    $scope.gridOptions = {
+        sort: {
+            predicate: 'date',
+            direction: 'asc'
+        },
+        data: $scope.outgoingChanges ? result.changes : [{
+            summary: "No outgoing changes"
+        }]
+    };
+
+    $scope.push = function(){
         $mdDialog.hide({"username" : result.username, "password" : result.password});
     }
 });
