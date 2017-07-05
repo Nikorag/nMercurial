@@ -3,14 +3,17 @@
   "version": "0.0.0",
   "private": false,
   "scripts": {
-    "start": "node ./bin/www",
-    "test": "./node_modules/.bin/mocha --reporter spec"
+    "start": "./node_modules/electron/cli.js ./electron.js",
+    "test": "./node_modules/.bin/mocha --reporter spec",
+    "server": "node ./bin/www",
+    "app": "./node_modules/electron/cli.js ./electron.js no-server"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
     "chai": "^4.0.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
+    "electron": "^1.6.11",
     "express": "~4.15.2",
     "hg": "file:hg_fixed",
     "jade": "~1.11.0",
