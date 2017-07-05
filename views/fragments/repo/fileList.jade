@@ -1,0 +1,14 @@
+div.file-list(flex="40", layout="column")
+    md-list.fileList(flex="")
+        md-subheader.md-sticky Files
+        span(ng-repeat="file in changedFiles track by $index")
+            md-list-item.md-1-line(ng-click="getFileChanges(file)", ng-class="'fileItem-'+(file.mod != '?' ? (file.mod == '!' ? 'R' : file.mod) : 'unknown')+' '+(file.filename==selectedFile.filename ? 'selectedFile' : '')", flex="")
+                md-checkbox.md-primary(ng-if="selectedChangeset == ''", data-filename="{{file.filename}}", flex="5")
+                span(flex="5")
+                    i.fa.fa-plus.filestatusIcon(ng-if="file.mod == 'A'")
+                    i.fa.fa-pencil.filestatusIcon(ng-if="file.mod == 'M'")
+                    i.fa.fa-ban.filestatusIcon(ng-if="file.mod == 'R' || file.mod == '!'")
+                    i.fa.fa-question-circle.filestatusIcon(ng-if="file.mod == '?'")
+                span.overflow-left(flex="80") {{file.filename}}
+                md-button.md-icon-button(ng-if="selectedChangeset == ''", data-filename="{{file.filename}}", ng-click="undo(file, $event)", flex="10")
+                    i.fa.fa-undo
