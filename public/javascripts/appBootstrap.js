@@ -1,4 +1,4 @@
-angular.module('BlankApp', ['ngMaterial', 'ngMaterialSidemenu', 'dataGrid', 'pagination'], function($httpProvider){
+angular.module('BlankApp', ['ngMaterial', 'ngMaterialSidemenu', 'dataGrid', 'pagination', 'ngCookies'], function($httpProvider){
     $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
 
     /**

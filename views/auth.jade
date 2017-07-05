@@ -8,8 +8,11 @@
         div(layout="column", layout-padding="")
             md-input-container
                 label Username
-                input(ng-model='auth.username', ng-init="auth.username = '"+username+"'")
+                input(ng-model='authData.username', ng-init="authData.username = '"+username+"'")
             md-input-container
                 label Password
-                input(ng-model='auth.password', type="password")
-            md-button.md-raised.md-primary(ng-click="auth(auth)") Authenticate
+                input(ng-model='authData.password', type="password")
+            md-input-container
+                md-checkbox(ng-model='authData.remember')
+                    | Remember in this session
+            md-button.md-raised.md-primary(ng-click="auth(authData)") Authenticate

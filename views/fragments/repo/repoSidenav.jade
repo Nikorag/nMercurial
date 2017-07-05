@@ -1,31 +1,38 @@
 md-sidenav.md-sidenav-left(md-component-id="left",md-is-locked-open="true",md-whiteframe="4")
-    md-toolbar.md-theme-indigo
-        .md-toolbar-tools
-            h2(flex='', md-truncate='') Menu
-    md-content(layout-margin="", style="height: 100%", layout="column")
-        md-button.md-raised.md-primary(ng-click="goHome()")
-            i.fa.fa-home
-            | &nbsp;Home
-        md-sidemenu(locked="true")
-            md-sidemenu-group
-                md-sidemenu-content(md-icon="code-fork", md-heading="branches")
-                    span(ng-repeat="branch in branches")
-                        md-sidemenu-button(ng-dblclick="changeBranch(branch.name, $event)")
-                            i.fa.fa-circle-o(ng-if="branch.active", class="branchActive")
-                            p(ng-class="branch.active ? 'active-branch' : ''") {{branch.name}}
-            md-sidemenu-group
-                md-sidemenu-content(md-icon="tags", md-heading="tags")
-                    span(ng-repeat="tag in tags")
-                        md-sidemenu-button(ng-click="null")
-                            p {{tag.name}}
-            //md-sidemenu-group
-            //    md-sidemenu-content(md-icon="archive", md-heading="shelves")
-        md-button.md-accent(ng-click="refreshRepo()")
-            i.fa.fa-refresh
-            | &nbsp;Refresh
-        md-button.md-primary(ng-click="pull()")
-            i.fa.fa-arrow-down
-            | &nbsp;Pull
-        md-button.md-primary(ng-click="push()")
-            i.fa.fa-arrow-up
-            | &nbsp;Push
+    md-content(style="height: 100%", layout="column")
+        md-toolbar.md-theme-indigo
+            .md-toolbar-tools
+                h2(flex='', md-truncate='') Menu
+        div.sideNav(layout-padding="", layout="column", flex="")
+            md-button.md-raised.md-primary(ng-click="goHome()")
+                i.fa.fa-home
+                | &nbsp;Home
+            md-button.md-accent(ng-click="refreshRepo()")
+                i.fa.fa-refresh
+                | &nbsp;Refresh
+            md-button.md-primary(ng-click="pull()")
+                i.fa.fa-arrow-down
+                | &nbsp;Pull
+                span(ng-if="incomingChanges.length > 0") &nbsp;({{incomingChanges.length}})
+            md-button.md-primary(ng-click="push()")
+                i.fa.fa-arrow-up
+                | &nbsp;Push
+                span(ng-if="outgoingChanges.length > 0") &nbsp;({{outgoingChanges.length}})
+            md-sidemenu(locked="true")
+                md-sidemenu-group
+                    md-sidemenu-content(md-icon="code-fork", md-heading="branches")
+                        span(ng-repeat="branch in branches")
+                            md-sidemenu-button(ng-dblclick="changeBranch(branch.name, $event)")
+                                i.fa.fa-circle-o(ng-if="branch.active", class="branchActive")
+                                p(ng-class="branch.active ? 'active-branch' : ''") {{branch.name}}
+                md-sidemenu-group
+                    md-sidemenu-content(md-icon="tags", md-heading="tags")
+                        span(ng-repeat="tag in tags")
+                            md-sidemenu-button(ng-click="null")
+                                p {{tag.name}}
+                //md-sidemenu-group
+                //    md-sidemenu-content(md-icon="archive", md-heading="shelves")
+        span(flex="")
+        span.stickToBottom(ng-if="authenticated", layout-padding="")
+            i.fa.fa-key
+            | &nbsp;Authenticated

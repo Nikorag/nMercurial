@@ -1,5 +1,6 @@
 var express = require('express');
 var hgService = require('../services/hgService');
+var authService = require('../services/authService');
 var router = express.Router();
 
 /* Render the repo page */
@@ -171,6 +172,11 @@ router.post("/repo/push", function(req, res, next){
 
         }
     });
+});
+
+router.get("/getSeed", function(req, res, next){
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(authService.getSeed()));
 });
 
 router.get("/repo/incomingChangesPopup", function(req, res, next){

@@ -12,22 +12,23 @@ html(lang='en')
         div(ng-controller="repoCtrl", layout="row")
             include fragments/repo/repoSidenav
             div#repoGrid(flex="", layout="column")
-                include fragments/toolbar
-                md-content(layout-padding="")
-                    div(grid-data='', grid-options='gridOptions', grid-actions='gridActions', server-pagination="true")
-                        include fragments/repo/pagination
-                        div
-                            include fragments/repo/changeTable
-                        include fragments/repo/pagination
-                    div(layout="row")
-                        include fragments/repo/fileList
-                        div(flex="60", layout="column")
-                            include fragments/repo/diff
-                    div(layout="column", ng-if="selectedChangeset == ''")
-                        md-input-container.md-block
-                            label Commit Message
-                            textarea(rows="3", ng-model="commitMsg")
+                md-content
+                    include fragments/toolbar
+                    div.verticalScroll(layout-padding="", layout="column", flex="")
+                        div(grid-data='', grid-options='gridOptions', grid-actions='gridActions', server-pagination="true")
+                            include fragments/repo/pagination
+                            div
+                                include fragments/repo/changeTable
+                            include fragments/repo/pagination
                         div(layout="row")
-                            span(flex="")
-                            md-button.md-raised.md-primary(ng-click="commit(commitMsg, $event)", ng-disabled="getCheckedFiles().length == 0") Commit
+                            include fragments/repo/fileList
+                            div(flex="60", layout="column")
+                                include fragments/repo/diff
+                        div(layout="column", ng-if="selectedChangeset == ''")
+                            md-input-container.md-block
+                                label Commit Message
+                                textarea(rows="3", ng-model="commitMsg")
+                            div(layout="row")
+                                span(flex="")
+                                md-button.md-raised.md-primary(ng-click="commit(commitMsg, $event)", ng-disabled="getCheckedFiles().length == 0") Commit
         include fragments/includes.jade

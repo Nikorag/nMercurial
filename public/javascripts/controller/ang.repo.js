@@ -1,4 +1,4 @@
-angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDialog, hg, $rootScope, $location){
+angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDialog, hg, $rootScope, $location, nAuth){
 
     $scope.repoName = $('.repoName').attr("data-repoName"); //Current reponame, rendered on the page by the route
     $scope.repoUrl = $('.repoName').attr("data-repoUrl"); //Current reponame, rendered on the page by the route
@@ -11,6 +11,9 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
     $scope.totalHistory = 0;
     $scope.gridActions = {};
     $scope.selectedFile = {}; //Currently diffing file
+    $scope.outgoingChanges = {};
+    $scope.incomingChanges = {};
+    $scope.authenticated = false;
     $scope.gridOptions = {
         sort: {
             predicate: 'date',
@@ -23,6 +26,17 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
 
     function getData(params, callback){
         showSpinner();
+        //Update page elements
+        nAuth.getSavedCredential($scope.repoName).then(function(auth){
+            hg.getIncoming($scope.repoName, $scope.repoUrl, auth.username, auth.password, false).then(function(result){
+                $scope.incomingChanges = result.changes;
+            });
+            hg.getOutgoing($scope.repoName, $scope.repoUrl, auth.username, auth.password, false).then(function(result){
+                $scope.outgoingChanges = result.changes;
+            });
+        });
+        $scope.authenticated = nAuth.hasCredentials($scope.repoName);
+        //Get the data
         $scope.updateCurrentRevision(function(){
             hg.getHistory(params, $scope.repoName).then(function(result){
                 if ($scope.currentRevision == "" && getSearchParamsFromString(params).page == '1'){
@@ -173,7 +187,6 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
                 $scope.clearSelection();
             }
         });
-
     }
 
     $scope.clearSelection = function(){
@@ -207,7 +220,7 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
     }
 
     $scope.pull = function(){
-        hg.getIncoming($scope.repoName, $scope.repoUrl, undefined, undefined).then(function(result){
+        hg.getIncoming($scope.repoName, $scope.repoUrl, undefined, undefined, false).then(function(result){
             $mdDialog.show({
                 controller: "incomingChangesCtrl",
                 templateUrl: '/repo/incomingChangesPopup',
@@ -226,7 +239,7 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
     };
 
     $scope.push = function(){
-        hg.getOutgoing($scope.repoName, $scope.repoUrl, undefined, undefined).then(function(result){
+        hg.getOutgoing($scope.repoName, $scope.repoUrl, undefined, undefined, false).then(function(result){
             $mdDialog.show({
                 controller: "outgoingChangesCtrl",
                 templateUrl: '/repo/outgoingChangesPopup',
@@ -251,6 +264,10 @@ angular.module('BlankApp').controller("repoCtrl", function($scope, $http, $mdDia
     hg.getTags($scope.repoName).then(function(result){
        $scope.tags = result;
     });
+
+    setInterval(function(){
+        $scope.refreshRepo();
+    }, 60000);
 
     function getSearchParamsFromString(str){
         var params = {};

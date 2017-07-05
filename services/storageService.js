@@ -1,5 +1,7 @@
 var storage = require('node-persist');
 
+storage.initSync();
+
 module.exports = {
     getRepos : getRepos,
     getRepo : getRepo,
@@ -8,7 +10,6 @@ module.exports = {
 }
 
 function getRepos() {
-    storage.initSync();
     var repos = storage.getItemSync("repos");
     if (repos !== undefined){
         return repos;

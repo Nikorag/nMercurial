@@ -1,4 +1,4 @@
-angular.module('BlankApp').service('hg', function($http, $q, $mdDialog){
+angular.module('BlankApp').service('hg', function($http, $q, $mdDialog, nAuth){
 
     this.getBranches = function(repoName){
         var deferred = $q.defer();
@@ -134,7 +134,7 @@ angular.module('BlankApp').service('hg', function($http, $q, $mdDialog){
 
     this.getIncoming = getIncoming;
 
-    function getIncoming(repoName, repoUrl, username, password){
+    function getIncoming(repoName, repoUrl, username, password, saved){
         var deferred = $q.defer();
         showSpinner();
         $http({
@@ -152,11 +152,16 @@ angular.module('BlankApp').service('hg', function($http, $q, $mdDialog){
             } else {
                 //Show username & password dialog
                 hideSpinner();
-                showUsernameAndPassword(getUsernameFromUrl(repoUrl)).then(function(auth){
-                    getIncoming(repoName, repoUrl, auth.username, auth.password).then(function(result){
+                if (saved) {
+                    //If the creds are saved but don't work, delete them
+                    nAuth.clearCredentials(repoName);
+                }
+                nAuth.showUsernameAndPassword(nAuth.getUsernameFromUrl(repoUrl), repoName).then(function (auth) {
+                    getIncoming(repoName, repoUrl, auth.username, auth.password, auth.remember).then(function (result) {
                         deferred.resolve(result);
                     });
                 });
+
             }
         });
         return deferred.promise;
@@ -164,7 +169,7 @@ angular.module('BlankApp').service('hg', function($http, $q, $mdDialog){
 
     this.getOutgoing = getOutgoing;
 
-    function getOutgoing(repoName, repoUrl, username, password){
+    function getOutgoing(repoName, repoUrl, username, password, saved){
         var deferred = $q.defer();
         showSpinner();
         $http({
@@ -182,8 +187,13 @@ angular.module('BlankApp').service('hg', function($http, $q, $mdDialog){
             } else {
                 //Show username & password dialog
                 hideSpinner();
-                showUsernameAndPassword(getUsernameFromUrl(repoUrl)).then(function(auth){
-                    getOutgoing(repoName, repoUrl, auth.username, auth.password).then(function(result){
+                if (saved) {
+                    //If the creds are saved but don't work, delete them
+                    nAuth.clearCredentials(repoName);
+                    auth.remember = false;
+                }
+                nAuth.showUsernameAndPassword(nAuth.getUsernameFromUrl(repoUrl), repoName).then(function (auth) {
+                    getOutgoing(repoName, repoUrl, auth.username, auth.password, auth.remember).then(function (result) {
                         deferred.resolve(result);
                     });
                 });
@@ -226,21 +236,6 @@ angular.module('BlankApp').service('hg', function($http, $q, $mdDialog){
             deferred.resolve();
         });
         return deferred.promise;
-    }
-
-    function showUsernameAndPassword(username){
-        return $mdDialog.show({
-            controller: "authPopupCtrl",
-            templateUrl: '/auth?username='+username,
-            parent: angular.element(document.body),
-            clickOutsideToClose: true,
-        });
-    }
-
-    function getUsernameFromUrl(url){
-        var urlMatch = /^(https?\:\/\/)(.*)/g;
-        var match = urlMatch.exec(url);
-        return match[2].includes("@") ? match[2].split("@")[0] :"";
     }
 
     function showSpinner(){
