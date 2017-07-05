@@ -3,17 +3,22 @@
   "version": "0.0.0",
   "private": false,
   "scripts": {
-    "start": "./node_modules/electron/cli.js ./electron.js",
+    "start": "./node_modules/electron/cli.js ./index.js",
     "test": "./node_modules/.bin/mocha --reporter spec",
     "server": "node ./bin/www",
-    "app": "./node_modules/electron/cli.js ./electron.js no-server"
+    "app": "./node_modules/electron/cli.js ./index.js no-server",
+    "package-mac": "./node_modules/electron-packager/cli.js . --overwrite --platform=darwin --arch=x64 --icon=electron-assets/icon.icns --out=release-builds",
+    "package-win": "./node_modules/electron-packager/cli.js . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Electron Tutorial App\"",
+    "package-linux": "./node_modules/electron-packager/cli.js . --overwrite --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --out=release-builds"
   },
+  "productName": "nMercurial",
   "dependencies": {
     "body-parser": "~1.17.1",
     "chai": "^4.0.2",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
     "electron": "^1.6.11",
+    "electron-packager": "^8.7.2",
     "express": "~4.15.2",
     "hg": "file:hg_fixed",
     "jade": "~1.11.0",

@@ -112,3 +112,6 @@ fabric.properties
 
 # style.css cos it's in style.less
 public/stylesheets/style.css
+
+#don't include release builds
+release-builds

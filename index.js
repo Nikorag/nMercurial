@@ -1,19 +1,41 @@
 const {app, BrowserWindow, Menu} = require('electron')
 const path = require('path')
 const url = require('url')
+const cp = require('child_process');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
-const cp = require('child_process');
+
 let instance = null;
 
 var args = process.argv.splice(2,process.argv.length);
 
+var template = [{
+    label: "Application",
+    submenu: [
+        { label: "About Application", selector: "orderFrontStandardAboutPanel:" },
+        { type: "separator" },
+        { label: "Quit", accelerator: "Command+Q", click: function() { app.quit(); }}
+    ]}, {
+    label: "Edit",
+    submenu: [
+        { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+        { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+        { type: "separator" },
+        { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+        { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+        { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+        { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+    ]}
+];
+
+Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+
 function createWindow () {
     if (instance == null && !args.includes("no-server")){
-        instance = cp.spawn('node',['./bin/www']);
+        instance = cp.spawn('node',[path.join(__dirname, 'bin/www')]);
 
         instance.stdout.on('data', (data) => {
             console.log(data.toString().trim());

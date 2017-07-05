@@ -68,6 +68,7 @@ function getRepoPath(path){
             //Check the repos path
             repo.runCommand("path", "default", function(pathErr, pathOutput){
                 if (pathErr){
+                    console.log(pathErr);
                     reject();
                 } else {
                     resolve(pathOutput[0].body);
